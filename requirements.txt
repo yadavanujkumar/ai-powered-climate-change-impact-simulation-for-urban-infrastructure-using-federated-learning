@@ -1,0 +1,39 @@
+# requirements.txt
+
+# Core dependencies for AI and Machine Learning
+numpy==1.24.2          # Fundamental package for numerical computations
+pandas==1.5.3          # Data manipulation and analysis
+scikit-learn==1.2.0    # Machine learning library for Python
+tensorflow==2.12.0     # Deep learning framework
+torch==2.0.0           # PyTorch for advanced ML models
+xgboost==1.7.5         # Gradient boosting library for regression and classification
+lightgbm==3.3.2        # Fast, distributed, high-performance gradient boosting (GBDT)
+
+# Federated Learning dependencies
+flwr==0.18.0           # Flower framework for federated learning
+torchvision==0.15.0    # Image processing for PyTorch models
+
+# Data handling and ETL
+dask==2023.4.0         # Parallel computing with task scheduling
+pyarrow==11.0.0        # Cross-language development platform for in-memory data
+fastparquet==0.8.3     # Fast Parquet file format reader/writer
+
+# Configuration management
+python-dotenv==1.0.0   # Read environment variables from .env file
+pydantic==1.10.4       # Data validation and settings management using Python type annotations
+
+# Logging and monitoring
+loguru==0.6.0          # Simplified logging for Python
+prometheus-client==0.16.0 # Monitoring and metrics collection
+
+# Testing and validation
+pytest==7.2.2          # Testing framework for Python
+pytest-cov==4.0.0      # Coverage reporting for pytest
+hypothesis==6.61.0     # Property-based testing for Python
+
+# Docker support
+docker==5.0.3          # Docker SDK for Python
+
+# Additional utilities
+requests==2.28.1       # HTTP library for Python
+tqdm==4.65.0           # Progress bar for loops

@@ -1,0 +1,117 @@
+name: CI Workflow for AI-Powered Climate Change Impact Simulation
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - staging
+  pull_request:
+    branches:
+      - main
+      - dev
+      - staging
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run linter
+        run: |
+          flake8 . --max-line-length=120
+          eslint . --ext .js
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build . -t myorg/climate-simulation:${{ github.sha }} --build-arg ENV=${{ github.event_name }}
+
+      - name: Push Docker image
+        run: |
+          docker push myorg/climate-simulation:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment..."
+          # Add deployment commands here
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, deploy]
+    steps:
+      - name: Notify team
+        run: |
+          echo "Notifying team about the CI results..."
+          # Add notification commands here
+
+env:
+  # Environment variables for different environments
+  DEV_DB_URL: ${DEV_DB_URL}
+  STAGING_DB_URL: ${STAGING_DB_URL}
+  PROD_DB_URL: ${PROD_DB_URL}
+  SECRET_KEY: ${SECRET_KEY}
+  DOCKER_USERNAME: ${DOCKER_USERNAME}
+  DOCKER_PASSWORD: ${DOCKER_PASSWORD}
+  
+# Resource limits and timeouts can be configured in the respective job steps if needed.
+# For example, you can set a timeout for the test job as follows:
+# timeout-minutes: 10
+
+# Ensure that sensitive data is managed through GitHub Secrets and not hardcoded in the workflow.
